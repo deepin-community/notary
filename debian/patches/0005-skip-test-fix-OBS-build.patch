@@ -1,0 +1,26 @@
+From 7d41ee9655b7b8daa7ef7f1b90163da4a4e872e5 Mon Sep 17 00:00:00 2001
+From: xzl <xiangzelong@deepin.org>
+Date: Wed, 17 Jan 2024 13:21:58 +0800
+Subject: [PATCH 1/1] skip-test-fix-OBS-build
+
+During the OBS build process, a unit test attempts to start a service on port 80 with the expectation of failure.
+However, due to the OBS permission management mechanism, the service on port 80 can be started successfully,
+resulting in the failure of the unit test. Therefore, we have decided to disable this unit test.
+---
+ server/server_test.go | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/server/server_test.go b/server/server_test.go
+index c5cc4e3..9f5a977 100644
+--- a/server/server_test.go
++++ b/server/server_test.go
+@@ -38,6 +38,7 @@ func TestRunBadAddr(t *testing.T) {
+ }
+ 
+ func TestRunReservedPort(t *testing.T) {
++	t.SkipNow()
+ 	ctx, cancel := context.WithCancel(context.Background())
+ 	defer cancel()
+ 
+-- 
+2.43.0
