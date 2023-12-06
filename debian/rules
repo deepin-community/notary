@@ -1,4 +1,34 @@
 #!/usr/bin/make -f
 
+export DH_GOLANG_GO_GENERATE := 1
+export DH_GOLANG_INSTALL_EXTRA := fixtures
+GOPKG     := github.com/theupdateframework/notary
+BUILDDIR  := $(CURDIR)/_build
+BUILDTAGS := pkcs11
+
 %:
-	dh $@
+	dh $@ --builddirectory=$(BUILDDIR) \
+	      --buildsystem=golang \
+	      --with=golang
+
+override_dh_auto_configure:
+	# Note(zhsj): some certs are expired and cause test failures.
+	# but there's no need to regenerate certs which need cfssljson tool.
+	# And I don't want to add another Build-Depends.
+	sed -i '/command -v cfssljson/i exit 0' ./fixtures/regenerateTestingCerts.sh
+	cd fixtures && ./regenerateTestingCerts.sh
+	dh_auto_configure
+	# Copy the vendor tree
+	cp -av debian/vendor _build/src/$(GOPKG)/
+
+override_dh_auto_build:
+	dh_auto_build -- -tags "$(BUILDTAGS)"
+
+override_dh_auto_install:
+	# There's no reason to ship this script as it's not needed for the tests,
+	# and will cause Lintian to warn about a 'script-not-executable'.
+	rm $(BUILDDIR)/src/$(GOPKG)/fixtures/regenerateTestingCerts.sh
+	# Some keys and certs are executable, Lintian says 'executable-not-elf-or-script'
+	find $(BUILDDIR)/src/$(GOPKG)/fixtures/ -name '*.key' -executable -print | xargs chmod -x
+	find $(BUILDDIR)/src/$(GOPKG)/fixtures/ -name '*.crt' -executable -print | xargs chmod -x
+	dh_auto_install
