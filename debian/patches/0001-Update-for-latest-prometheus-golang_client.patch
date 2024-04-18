@@ -1,0 +1,36 @@
+From: Arnaud Rebillout <arnaud.rebillout@collabora.com>
+Date: Fri, 17 Jan 2020 09:43:57 +0700
+Subject: [PATCH] Update for latest prometheus/golang_client
+
+This change is suggested in the comments in prometheus/http.go < 1.x.
+
+Signed-off-by: Arnaud Rebillout <arnaud.rebillout@collabora.com>
+Bug-Upstream: https://github.com/theupdateframework/notary/issues/1527
+---
+ server/server.go | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/server/server.go b/server/server.go
+index f447887..d053dc5 100644
+--- a/server/server.go
++++ b/server/server.go
+@@ -12,6 +12,7 @@ import (
+ 	"github.com/docker/distribution/registry/auth"
+ 	"github.com/gorilla/mux"
+ 	"github.com/prometheus/client_golang/prometheus"
++	"github.com/prometheus/client_golang/prometheus/promhttp"
+ 	"github.com/sirupsen/logrus"
+ 	"github.com/theupdateframework/notary/server/errors"
+ 	"github.com/theupdateframework/notary/server/handlers"
+@@ -232,7 +233,7 @@ func RootHandler(ctx context.Context, ac auth.AccessController, trust signed.Cry
+ 		repoPrefixes,
+ 	))
+ 	r.Methods("GET").Path("/_notary_server/health").HandlerFunc(health.StatusHandler)
+-	r.Methods("GET").Path("/metrics").Handler(prometheus.Handler())
++	r.Methods("GET").Path("/metrics").Handler(promhttp.Handler())
+ 	r.Methods("GET", "POST", "PUT", "HEAD", "DELETE").Path("/{other:.*}").Handler(
+ 		authWrapper(handlers.NotFoundHandler))
+ 
+-- 
+2.20.1
+

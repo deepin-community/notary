@@ -1,0 +1,49 @@
+From: Arnaud Rebillout <arnaudr@kali.org>
+Date: Fri, 21 Jan 2022 22:55:56 +0700
+Subject: Fix unit tests for Go 1.17
+
+Per https://go.dev/doc/go1.17: Part.FileName now applies filepath.Base to the
+return value. This change of behavior seems to break notary.
+
+Bug: https://github.com/notaryproject/notary/issues/1630
+
+--- a/server/handlers/default.go
++++ b/server/handlers/default.go
+@@ -6,6 +6,8 @@ import (
+ 	"encoding/hex"
+ 	"encoding/json"
+ 	"io"
++	"mime"
++	"mime/multipart"
+ 	"net/http"
+ 	"strings"
+ 
+@@ -24,6 +26,18 @@ import (
+ 	"github.com/theupdateframework/notary/utils"
+ )
+ 
++// Starting Go 1.17, part.Filename() returns a basename, not what we want.
++// https://github.com/golang/go/blob/master/src/mime/multipart/multipart.go
++// https://github.com/golang/go/commit/784ef4c53135644d70f3476a4bd90010b9acff66
++func partFileName(part *multipart.Part) string {
++	v := part.Header.Get("Content-Disposition")
++	_, dispositionParams, err := mime.ParseMediaType(v)
++	if err != nil {
++		return ""
++	}
++	return dispositionParams["filename"]
++}
++
+ // MainHandler is the default handler for the server
+ func MainHandler(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+ 	// For now it only supports `GET`
+@@ -72,7 +86,8 @@ func atomicUpdateHandler(ctx context.Con
+ 		if err == io.EOF {
+ 			break
+ 		}
+-		role := data.RoleName(strings.TrimSuffix(part.FileName(), ".json"))
++		//role := data.RoleName(strings.TrimSuffix(part.FileName(), ".json"))
++		role := data.RoleName(strings.TrimSuffix(partFileName(part), ".json"))
+ 		if role.String() == "" {
+ 			logger.Info("400 POST empty role")
+ 			return errors.ErrNoFilename.WithDetail(nil)
