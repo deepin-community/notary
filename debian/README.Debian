@@ -1,0 +1,8 @@
+Vendoring of prometheus/client_golang
+-------------------------------------
+
+See <https://github.com/theupdateframework/notary/issues/1527> for details.
+As soon as this issue is solved, and we can build notary against prometheus/
+client_golang 1.x, please remove the vendoring.
+
+ -- Arnaud Rebillout <arnaud.rebillout@collabora.com>  Thu, 06 Feb 2020 08:40:39 +0700
