@@ -1,0 +1,19 @@
+From: Reinard Tartler <siretart@tauware.de>
+Description: Disable test that requires newer gprc
+
+The version of grpc in debian doesn't currently implement the
+"credentials/insecure" package. It was introduced in
+https://github.com/grpc/grpc-go/commit/8153ecea737122756248d0dbca6f858acb9cfcc6
+
+Please drop this patch when it becomes available in Debian
+
+Index: notary/signer/rpc_and_client_test.go
+===================================================================
+--- notary.orig/signer/rpc_and_client_test.go
++++ notary/signer/rpc_and_client_test.go
+@@ -1,3 +1,5 @@
++//go:build disable_test
++
+ package signer_test
+ 
+ // This module tests the Signer RPC interface using the Signer client
