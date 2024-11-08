@@ -21,6 +21,9 @@ override_dh_auto_configure:
 	# Copy the vendor tree
 	cp -av debian/vendor _build/src/$(GOPKG)/
 
+execute_after_dh_clean:
+	rm -rfv vendor/
+
 override_dh_auto_build:
 	dh_auto_build -- -tags "$(BUILDTAGS)"
 

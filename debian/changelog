@@ -1,3 +1,33 @@
+notary (0.7.0+git20240416.9d2b3b3+ds1-2) unstable; urgency=medium
+
+  * Team upload
+  * Upload changes from experimental to unstable
+  * Add a patch for building with newer versions of cloudflare-cfssl
+    library
+  * Set minimum version of golang-github-cloudflare-cfssl in d/control
+
+ -- Mathias Gibbens <gibmat@debian.org>  Fri, 26 Jul 2024 08:10:14 +0000
+
+notary (0.7.0+ds1-3) unstable; urgency=medium
+
+  * Team upload.
+  * allow compilation against golang/protobuf@v1.3
+  * Bump Standards-verison, no changes needed
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 09 Jun 2024 14:15:58 -0400
+
+notary (0.7.0+git20240416.9d2b3b3+ds1-1) experimental; urgency=medium
+
+  * New upstream version, packaging latest HEAD from upstream
+    Closes: #917716, #929716
+  * Add patch to allow compilation with libpq 1.10
+  * Build-depend on protoc gRPC plugin
+  * Refresh Patches
+  * Build against golang/protobuf@v1.5
+  * Delete vendor tree in clean target, Closes: #1049293
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 04 Jun 2024 21:30:50 -0400
+
 notary (0.7.0+ds1-2) unstable; urgency=medium
 
   * Team upload

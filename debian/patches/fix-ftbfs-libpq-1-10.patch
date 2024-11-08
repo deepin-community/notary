@@ -1,0 +1,19 @@
+Author: Reinhard Tartler <siretart@tauware.de>
+Description: Fix FTBFS with lib/pq 1.10
+
+Debian has newer version that includes https://github.com/lib/pq/commit/89fee896440712bc328c9087ea185c3990053f31
+
+
+Index: notary/server/storage/sqldb.go
+===================================================================
+--- notary.orig/server/storage/sqldb.go
++++ notary/server/storage/sqldb.go
+@@ -42,7 +42,7 @@ func translateOldVersionError(err error)
+ 		if err.Number == 1022 || err.Number == 1062 {
+ 			return ErrOldVersion{}
+ 		}
+-	case pq.Error:
++	case *pq.Error:
+ 		// https://www.postgresql.org/docs/10/errcodes-appendix.html
+ 		// 23505 = unique_violation
+ 		if err.Code == "23505" {
